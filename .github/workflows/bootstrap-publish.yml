@@ -1,0 +1,120 @@
+name: Bootstrap Enning Road atlas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bootstrap-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-enning-road-atlas
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct and verify public release
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          parts=(
+            .bootstrap/site/part-000
+            .bootstrap/site/part-001
+            .bootstrap/site/part-002
+            .bootstrap/site/part-003
+            .bootstrap/site/part-004
+            .bootstrap/site/part-005
+            .bootstrap/site/part-006
+            .bootstrap/site/part-007
+            .bootstrap/site/part-008
+            .bootstrap/site/part-009
+          )
+
+          for part in "${parts[@]}"; do
+            test -f "$part"
+          done
+
+          cat "${parts[@]}" > /tmp/enning-site.tar.xz.b64
+          test "$(wc -c < /tmp/enning-site.tar.xz.b64)" -eq 66944
+          base64 --decode /tmp/enning-site.tar.xz.b64 > /tmp/enning-site.tar.xz
+          echo "101ce27b12f94f8e491ac5f0d537929d1f389ae1db1955a2112f5ffc0aabf666  /tmp/enning-site.tar.xz" | sha256sum -c -
+          xz -t /tmp/enning-site.tar.xz
+
+          rm -rf /tmp/enning-site
+          mkdir -p /tmp/enning-site
+          tar -xJf /tmp/enning-site.tar.xz -C /tmp/enning-site
+
+          required=(
+            /tmp/enning-site/index.html
+            /tmp/enning-site/assets/app.js
+            /tmp/enning-site/assets/styles.css
+            /tmp/enning-site/data/meta.json
+            /tmp/enning-site/data/nodes.json
+            /tmp/enning-site/data/edges.json
+            /tmp/enning-site/docs/data-and-privacy.html
+            /tmp/enning-site/.github/workflows/deploy-pages.yml
+          )
+          for file in "${required[@]}"; do
+            test -f "$file"
+          done
+
+          node --check /tmp/enning-site/assets/app.js
+
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          root = Path('/tmp/enning-site')
+          payload = json.loads((root / 'data/meta.json').read_text(encoding='utf-8'))
+          nodes = json.loads((root / 'data/nodes.json').read_text(encoding='utf-8'))
+          edges = json.loads((root / 'data/edges.json').read_text(encoding='utf-8'))
+
+          assert len(payload['timeline']) == 178
+          assert len(nodes) == 1124
+          assert len(edges) == 1002
+          assert len({node['id'] for node in nodes}) == len(nodes)
+          assert all(re.fullmatch(r'ER\d{4}', node['id']) for node in nodes)
+          assert sum(int(edge.get('weight', 1)) for edge in edges) == 1010
+          assert all(0 <= edge['source'] < len(nodes) for edge in edges)
+          assert all(0 <= edge['target'] < len(nodes) for edge in edges)
+          assert sum(node['role'] == 'media' for node in nodes) == 1
+          assert sum(node['role'] == 'cso' for node in nodes) == 1
+
+          sanitisation = payload['meta']['sanitisation']
+          assert sanitisation['message_text_removed'] is True
+          assert sanitisation['usernames_removed'] is True
+          assert sanitisation['original_numeric_identifiers_replaced'] is True
+          assert sanitisation['original_to_public_mapping_published'] is False
+          assert sanitisation['raw_gephi_and_spreadsheet_files_published'] is False
+
+          forbidden_extensions = {'.xlsx', '.xls', '.gephi', '.csv', '.pdf'}
+          assert not any(path.suffix.lower() in forbidden_extensions for path in root.rglob('*') if path.is_file())
+          print('Structure and public-data boundary validated.')
+          PY
+
+      - name: Replace main with validated public site
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/enning-site/. .
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish anonymised Enning Road temporal network atlas"
+          git push origin HEAD:main
