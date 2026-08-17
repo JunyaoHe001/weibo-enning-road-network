@@ -31,7 +31,8 @@ jobs:
 
           parts=(
             .bootstrap/site/part-000
-            .bootstrap/site/part-001
+            .bootstrap/site/part-001a
+            .bootstrap/site/part-001b
             .bootstrap/site/part-002
             .bootstrap/site/part-003
             .bootstrap/site/part-004
