@@ -1,0 +1,41 @@
+{
+  "default": {
+    "summary": "Core movement · Cumulative to 28 Sep 2012 · 15:10 · 1,113 nodes · 993 directed edges",
+    "stats": [
+      "1,113",
+      "993",
+      "1,001",
+      "200"
+    ],
+    "time": "28 Sep 2012 · 15:10 · China Standard Time"
+  },
+  "slider_bin2": {
+    "time": "21 Sep 2012 · 17:00 · China Standard Time",
+    "edges": "112"
+  },
+  "interval_bin2": [
+    "112",
+    "107"
+  ],
+  "media": [
+    "510",
+    "513"
+  ],
+  "cso": [
+    "99",
+    "102"
+  ],
+  "extended": {
+    "time": "25 Mar 2013 · 04:10 · China Standard Time",
+    "stats": [
+      "1,124",
+      "1,002",
+      "1,010"
+    ]
+  },
+  "playback_time": "4/178",
+  "page_errors": [],
+  "console_errors": [],
+  "mobile_sidebar_open": "sidebar-open",
+  "mobile_errors": []
+}

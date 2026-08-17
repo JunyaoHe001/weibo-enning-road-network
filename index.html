@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Interactive temporal visualisation of an anonymised Weibo forwarding network associated with the Mashi Street protection movement in Guangzhou." />
+  <meta name="theme-color" content="#f4f6f8" />
+  <title>Enning Road Weibo Network</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar" aria-label="Network controls">
+      <div class="sidebar-inner">
+        <header class="brand">
+          <div class="eyebrow">Interactive temporal network</div>
+          <h1>Enning Road Weibo Network</h1>
+          <p class="subtitle">Mashi Street Protection Movement, Guangzhou</p>
+          <p class="description">
+            Explore how an anonymised Weibo forwarding network accumulated over time and how journalism and civil society occupied distinct structural positions.
+          </p>
+          <div class="privacy-note">
+            Message text, usernames, profile names, and original account identifiers are excluded. Activity times are rounded to ten-minute intervals.
+          </div>
+          <div id="error-box" role="alert"></div>
+        </header>
+
+        <section class="control-section">
+          <div class="section-title">
+            <h2>Time</h2>
+            <span class="value" id="time-status">Core movement</span>
+          </div>
+
+          <div class="field">
+            <label for="record-scope">Record scope</label>
+            <select id="record-scope">
+              <option value="core" selected>Core movement · 21–28 Sep 2012</option>
+              <option value="extended">All supplied records · through Mar 2013</option>
+            </select>
+          </div>
+
+          <div class="field two-col">
+            <div>
+              <label for="view-mode">Network view</label>
+              <select id="view-mode">
+                <option value="cumulative" selected>Cumulative network</option>
+                <option value="interval">Selected interval only</option>
+              </select>
+            </div>
+            <div>
+              <label for="play-speed">Playback</label>
+              <select id="play-speed">
+                <option value="2">2 intervals/s</option>
+                <option value="6" selected>6 intervals/s</option>
+                <option value="12">12 intervals/s</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="range-head">
+              <label for="time-slider">Activity interval</label>
+              <span class="range-value" id="time-index">—</span>
+            </div>
+            <input id="time-slider" type="range" min="0" max="0" step="1" value="0" />
+            <div class="time-label" id="time-label">Loading…</div>
+          </div>
+
+          <div class="activity-wrap">
+            <canvas id="activity-canvas" aria-label="New directed edges by non-empty ten-minute interval"></canvas>
+          </div>
+          <div class="activity-caption"><span>New directed edges per non-empty ten-minute interval</span><span id="interval-edges">—</span></div>
+
+          <div class="playback-grid">
+            <button id="start-button" type="button" aria-label="First interval">Start</button>
+            <button id="play-button" type="button" class="primary">Play</button>
+            <button id="next-button" type="button" aria-label="Next interval">Next</button>
+            <button id="end-button" type="button" aria-label="Last interval">End</button>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-title">
+            <h2>Filter and focus</h2>
+            <span class="value" id="filter-summary">All actors</span>
+          </div>
+
+          <div class="field">
+            <label for="actor-focus">Published actor focus</label>
+            <select id="actor-focus">
+              <option value="all" selected>Entire visible network</option>
+              <option value="media">Media-1 ego network</option>
+              <option value="cso">CSO-1 ego network</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="component-scope">Connected components</label>
+            <select id="component-scope">
+              <option value="all" selected>All weak components</option>
+              <option value="largest">Largest weak component only</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="range-head">
+              <label for="node-share">Nodes shown</label>
+              <span class="range-value" id="node-share-value">100%</span>
+            </div>
+            <input id="node-share" type="range" min="10" max="100" step="5" value="100" />
+            <div class="range-row"><span>most connected</span><span>all visible nodes</span></div>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-title">
+            <h2>Display</h2>
+            <span class="value" id="display-status">Communities</span>
+          </div>
+
+          <div class="field two-col">
+            <div>
+              <label for="node-size">Node size</label>
+              <select id="node-size">
+                <option value="degree" selected>Degree</option>
+                <option value="weighted">Weighted degree</option>
+                <option value="hub">HITS hub</option>
+                <option value="authority">HITS authority</option>
+                <option value="betweenness">Betweenness</option>
+                <option value="pagerank">PageRank</option>
+                <option value="uniform">Uniform</option>
+              </select>
+            </div>
+            <div>
+              <label for="node-colour">Node colour</label>
+              <select id="node-colour">
+                <option value="community" selected>Structural community</option>
+                <option value="time">First appearance</option>
+                <option value="role">Published actor role</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="inline-check" for="show-labels">
+            <input id="show-labels" type="checkbox" checked />
+            <span>Label key and highly connected actors</span>
+          </label>
+          <label class="inline-check" for="show-arrows">
+            <input id="show-arrows" type="checkbox" />
+            <span>Show forwarding directions</span>
+          </label>
+
+          <div class="button-row">
+            <button id="fit-button" type="button" class="primary">Fit graph</button>
+            <button id="clear-button" type="button">Clear focus</button>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-title">
+            <h2>Visible network</h2>
+            <span class="value" id="selected-label">—</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Nodes</div>
+              <div class="number" id="stat-nodes">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Directed edges</div>
+              <div class="number" id="stat-edges">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Interactions</div>
+              <div class="number" id="stat-interactions">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Communities</div>
+              <div class="number" id="stat-communities">—</div>
+            </div>
+          </div>
+          <p class="coverage" id="backup-note"></p>
+        </section>
+
+        <footer class="footer">
+          <p>Only anonymised nodes, directed ties, recomputed structural metrics, layout coordinates, and rounded activity intervals are used in this atlas.</p>
+          <div class="links">
+            <a href="https://doi.org/10.1016/j.compenvurbsys.2024.102193" target="_blank" rel="noopener">Paper</a>
+            <a href="./docs/data-and-privacy.html" target="_blank" rel="noopener">Data &amp; privacy</a>
+            <a href="https://github.com/JunyaoHe001/weibo-enning-road-network" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </footer>
+      </div>
+    </aside>
+
+    <main id="network-wrap">
+      <button id="mobile-toggle" type="button">Controls</button>
+      <div id="sidebar-scrim" aria-hidden="true"></div>
+      <canvas id="network-canvas" aria-label="Interactive directed temporal network graph"></canvas>
+      <div id="network-summary">Loading network…</div>
+      <div id="graph-legend" aria-live="polite"></div>
+      <div id="canvas-help">Drag to pan · Scroll to zoom · Click a node to highlight its direct neighbourhood</div>
+      <div class="zoom-controls" aria-label="Zoom controls">
+        <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+        <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+        <button id="zoom-fit" type="button" aria-label="Fit graph">⌂</button>
+      </div>
+      <div id="tooltip" role="tooltip"></div>
+      <div id="loading">
+        <div class="loading-card">
+          <div class="spinner"></div>
+          <div id="loading-text">Loading anonymised network…</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="./assets/app.js" defer></script>
+</body>
+</html>

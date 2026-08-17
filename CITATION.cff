@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "Please cite the associated article when using this atlas."
+title: "Enning Road Weibo Network"
+type: software
+version: 1.0.0
+authors:
+  - family-names: He
+    given-names: Junyao
+repository-code: "https://github.com/JunyaoHe001/weibo-enning-road-network"
+url: "https://junyaohe001.github.io/weibo-enning-road-network/"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Informal participation in digital planning: How can third parties use social media to shift power relations in planning?"
+  authors:
+    - family-names: He
+      given-names: Junyao
+    - family-names: Lin
+      given-names: Yanliu
+    - family-names: Hooimeijer
+      given-names: Pieter
+    - family-names: Monstadt
+      given-names: Jochen
+  journal: "Computers, Environment and Urban Systems"
+  volume: 114
+  year: 2024
+  doi: "10.1016/j.compenvurbsys.2024.102193"

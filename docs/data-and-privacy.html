@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Data and privacy note for the Enning Road Weibo Network atlas." />
+  <title>Data and privacy · Enning Road Weibo Network</title>
+  <style>
+    :root { --ink:#17212b; --muted:#667085; --line:#d9e0e7; --accent:#1f5f8b; --bg:#f4f6f8; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { width:min(820px,calc(100% - 32px)); margin:32px auto; padding:34px 38px 42px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:0 10px 30px rgba(15,23,42,.08); }
+    h1 { margin:0; font-size:1.8rem; letter-spacing:-.025em; }
+    h2 { margin:30px 0 10px; font-size:1.05rem; }
+    p, li { font-size:.91rem; line-height:1.68; }
+    .lead { color:var(--muted); font-size:1rem; }
+    .notice { margin:22px 0; padding:15px 17px; border:1px solid #cfe0eb; border-radius:10px; color:#31576f; background:#f3f8fb; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:.86rem; }
+    th, td { padding:9px 10px; border-bottom:1px solid var(--line); text-align:left; }
+    th { color:#344054; background:#f8fafc; }
+    a { color:var(--accent); }
+    code { padding:1px 5px; border-radius:4px; background:#eef2f5; }
+    .links { display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:28px; padding-top:18px; border-top:1px solid var(--line); }
+    @media (max-width:600px) { main { margin:0; width:100%; min-height:100vh; padding:25px 20px 34px; border:0; border-radius:0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Data and privacy</h1>
+    <p class="lead">Enning Road Weibo Network · Mashi Street Protection Movement, Guangzhou</p>
+
+    <div class="notice">
+      The public atlas contains anonymised topology and rounded temporal information only. It does not contain message text, usernames, nicknames, profile names, original account identifiers, or an identifier mapping.
+    </div>
+
+    <h2>Public network coverage</h2>
+    <table>
+      <thead><tr><th>Measure</th><th>Public atlas</th></tr></thead>
+      <tbody>
+        <tr><td>Directed edge records</td><td>1,002</td></tr>
+        <tr><td>Anonymised nodes</td><td>1,124</td></tr>
+        <tr><td>Weighted interactions</td><td>1,010</td></tr>
+        <tr><td>Non-empty ten-minute intervals</td><td>178</td></tr>
+        <tr><td>Core movement period</td><td>21–28 September 2012</td></tr>
+      </tbody>
+    </table>
+
+    <p>The associated article reports an initial collection of 1,038 retweets and 1,147 users. This atlas uses the structurally valid records present in the supplied analysis backup and states the difference explicitly.</p>
+
+    <h2>Removed information</h2>
+    <ul>
+      <li>post, repost, and message text;</li>
+      <li>usernames, nicknames, display names, and profile information;</li>
+      <li>original platform and analysis identifiers;</li>
+      <li>source labels stored in the Gephi project;</li>
+      <li>the original spreadsheets and Gephi project;</li>
+      <li>the private original-to-public identifier mapping.</li>
+    </ul>
+
+    <h2>Public identifiers and roles</h2>
+    <p>Nodes receive fresh random identifiers in the form <code>ER####</code>. These identifiers are unrelated to source order, source IDs, names, degree ranking, or appearance time. The mapping was not written into the release.</p>
+    <p>The interface retains the published role labels <code>Media-1</code> and <code>CSO-1</code>. It does not disclose the corresponding account names or original identifiers. All remaining nodes are represented as anonymous actors.</p>
+
+    <h2>Temporal and structural processing</h2>
+    <p>Source timestamps are rounded down to ten-minute intervals in China Standard Time. The atlas displays non-empty intervals only. ForceAtlas2 coordinates, Louvain communities, HITS scores, PageRank, betweenness, and degree measures were recomputed from the anonymised directed structure.</p>
+
+    <h2>Residual disclosure risk</h2>
+    <p>Network topology itself can carry information. A person with independent access to the original network and substantial auxiliary information could attempt structural matching. The public release reduces this risk through content removal, identifier replacement, time rounding, mapping suppression, and exclusion of the raw files. It does not claim formal differential privacy or legal certification of anonymisation.</p>
+
+    <h2>Associated article</h2>
+    <p>He, J., Lin, Y., Hooimeijer, P., &amp; Monstadt, J. (2024). “Informal participation in digital planning: How can third parties use social media to shift power relations in planning?” <em>Computers, Environment and Urban Systems</em>, 114, 102193.</p>
+
+    <div class="links">
+      <a href="../">Return to the atlas</a>
+      <a href="https://doi.org/10.1016/j.compenvurbsys.2024.102193" target="_blank" rel="noopener">Open the article</a>
+      <a href="https://github.com/JunyaoHe001/weibo-enning-road-network" target="_blank" rel="noopener">GitHub repository</a>
+    </div>
+  </main>
+</body>
+</html>
