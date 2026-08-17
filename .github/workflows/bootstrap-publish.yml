@@ -65,7 +65,6 @@ jobs:
             /tmp/enning-site/data/nodes.json
             /tmp/enning-site/data/edges.json
             /tmp/enning-site/docs/data-and-privacy.html
-            /tmp/enning-site/.github/workflows/deploy-pages.yml
           )
           for file in "${required[@]}"; do
             test -f "$file"
@@ -106,16 +105,20 @@ jobs:
           print('Structure and public-data boundary validated.')
           PY
 
-      - name: Replace main with validated public site
+      - name: Publish validated static site to gh-pages
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          cd /tmp/enning-site
+          rm -rf .git .github .bootstrap
+          touch .nojekyll
 
-          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp -a /tmp/enning-site/. .
-
+          git init -b gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Publish anonymised Enning Road temporal network atlas"
-          git push origin HEAD:main
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
